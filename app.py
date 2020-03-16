@@ -20,24 +20,14 @@ def home():
          "for more than one info please type  localhost:5000/ then add the country name then /info= and here add your specific info , the second info"
 @app.route('/<country>')
 def ALLInfo(country=None):
-        countryInfo = None
-        baseAPI = BaseAPI()
-        country =country
-        if INTERNETCONNECTION:
-         countryInfo =baseAPI.get_country_info(country)
-        else:
-            o = OfflineData()
-            countryInfo = o.GetData(country)
+        countryInfo=gettingInfo(country)
         if countryInfo is not None:
-                return countryInfo[0]
+            return str(countryInfo)
         else:
-                return ("Not Found")
+             return ("Not Found")
 @app.route('/<country>/info=<specificInfo>')
 def GetInfo(country=None,specificInfo=None):
-    countryInfo = None
-    baseAPI = BaseAPI()
-    country = country
-    countryInfo = baseAPI.get_country_info(country)
+    countryInfo = gettingInfo(country)
     specificInfo=specificInfo
     if countryInfo is not None:
         return str(countryInfo[0][specificInfo])
@@ -45,10 +35,7 @@ def GetInfo(country=None,specificInfo=None):
         return ("Not Found")
 @app.route('/<country>/info=<specificInfo>,<specificInfo2>')
 def GetInfo2(country=None,specificInfo=None,specificInfo2=None):
-    countryInfo = None
-    baseAPI = BaseAPI()
-    country = country
-    countryInfo = baseAPI.get_country_info(country)
+    countryInfo = gettingInfo(country)
     specificInfo=specificInfo
     specificInfo2=specificInfo2
     if countryInfo is not None:
@@ -61,8 +48,19 @@ def CheckInternetConnection(host='http://google.com'):
         return True
     except:
         return False
+def gettingInfo(country):
+    INTERNETCONNECTION = CheckInternetConnection()
+    countryInfo = None
+    baseAPI = BaseAPI()
+    country = country
+    if INTERNETCONNECTION:
+        countryInfo = baseAPI.get_country_info(country)
+        print("Online Data")
+    else:
+        o = OfflineData()
+        countryInfo = o.GetData(country)
+    return countryInfo
 
 
 if __name__ == '__main__':
-    INTERNETCONNECTION = CheckInternetConnection()
     app.run(debug=True)
